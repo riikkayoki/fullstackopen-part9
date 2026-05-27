@@ -1,6 +1,6 @@
-import express, { type Request, type Response } from 'express';
+import express from 'express';
 import patientService from '../services/patientService.ts';
-import type { NewPatient, Patient } from '../types.ts';
+import { parsePatientData } from '../utils.ts';
 
 const router = express.Router();
 
@@ -8,9 +8,18 @@ router.get('/', (_req, res) => {
   res.send(patientService.getPatientEntries());
 });
 
-router.post('/', (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
-  const addedPatient = patientService.addPatient(req.body);
-  res.json(addedPatient);
+router.post('/', (req, res) => {
+  try {
+    const newPatient = parsePatientData(req.body);
+    const addedPatient = patientService.addPatient(newPatient);
+    res.json(addedPatient);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    res.status(400).send(errorMessage);
+  }
 });
 
 export default router;
