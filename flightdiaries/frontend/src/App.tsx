@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import type { JSX } from 'react';
 import styled from 'styled-components';
-import type { DiaryEntry, NewDiaryEntry } from './types';
-import { getAllDiaries, createDiary } from './services/diaryService';
+import type { NewDiaryEntryFields } from './services/diaryService';
+import { useDiaries } from './hooks/useDiaries';
+import { useNotification } from './hooks/useNotification';
 import { DiaryList } from './components/DiaryList';
 import { NewDiaryForm } from './components/NewDiaryForm';
-import type { JSX } from 'react';
+import { Notification } from './components/Notification';
 
 const Container = styled.div`
   font-family: sans-serif;
@@ -16,27 +17,25 @@ const Title = styled.h1`
 `;
 
 const App = (): JSX.Element => {
-  const [diaries, setDiaries] = useState<Array<DiaryEntry>>([]);
+  const { diaries, addDiary } = useDiaries();
+  const { notification, notify } = useNotification();
 
-  useEffect(() => {
-    const fetchDiaries = async () => {
-      const data = await getAllDiaries();
-      setDiaries(data);
-    };
-    fetchDiaries().catch((error: Error) => console.error(error.message));
-  }, []);
-
-  const handleCreate = (entry: NewDiaryEntry) => {
-    const create = async () => {
-      const created = await createDiary(entry);
-      setDiaries((current) => current.concat(created));
-    };
-    create().catch((error: Error) => console.error(error.message));
+  const handleCreate = async (fields: NewDiaryEntryFields): Promise<boolean> => {
+    try {
+      await addDiary(fields);
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        notify(error.message);
+      }
+      return false;
+    }
   };
 
   return (
     <Container>
       <Title>Diary entries</Title>
+      <Notification message={notification} />
       <NewDiaryForm onCreate={handleCreate} />
       <DiaryList entries={diaries} />
     </Container>

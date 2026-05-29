@@ -25,3 +25,7 @@ export const NewDiaryEntrySchema = z.object({
 });
 
 export type NewDiaryEntry = z.infer<typeof NewDiaryEntrySchema>;
+
+export const ErrorResponseSchema = z.object({
+  error: z.array(z.object({ message: z.string() })),
+});

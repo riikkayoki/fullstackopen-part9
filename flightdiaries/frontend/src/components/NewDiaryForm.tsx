@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import type { JSX, SyntheticEvent } from 'react';
 import styled from 'styled-components';
-import { NewDiaryEntrySchema, type NewDiaryEntry } from '../types';
+import type { NewDiaryEntryFields } from '../services/diaryService';
+import { useField } from '../hooks/useField';
 import { TextField } from './TextField';
 
 interface NewDiaryFormProps {
-  onCreate: (entry: NewDiaryEntry) => void;
+  onCreate: (fields: NewDiaryEntryFields) => Promise<boolean>;
 }
 
 const Heading = styled.h2`
@@ -24,34 +24,38 @@ const SubmitButton = styled.button`
 `;
 
 export const NewDiaryForm = (props: NewDiaryFormProps): JSX.Element => {
-  const [date, setDate] = useState('');
-  const [weather, setWeather] = useState('');
-  const [visibility, setVisibility] = useState('');
-  const [comment, setComment] = useState('');
+  const date = useField();
+  const weather = useField();
+  const visibility = useField();
+  const comment = useField();
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
 
-    const result = NewDiaryEntrySchema.safeParse({ date, weather, visibility, comment });
-    if (!result.success) {
-      console.error(result.error.issues);
-      return;
-    }
-
-    props.onCreate(result.data);
-    setDate('');
-    setWeather('');
-    setVisibility('');
-    setComment('');
+    const submit = async () => {
+      const created = await props.onCreate({
+        date: date.value,
+        weather: weather.value,
+        visibility: visibility.value,
+        comment: comment.value,
+      });
+      if (created) {
+        date.reset();
+        weather.reset();
+        visibility.reset();
+        comment.reset();
+      }
+    };
+    submit().catch((error: Error) => console.error(error.message));
   };
 
   return (
     <Form onSubmit={handleSubmit}>
       <Heading>Add a new entry</Heading>
-      <TextField id="date" label="date" value={date} onChange={setDate} />
-      <TextField id="visibility" label="visibility" value={visibility} onChange={setVisibility} />
-      <TextField id="weather" label="weather" value={weather} onChange={setWeather} />
-      <TextField id="comment" label="comment" value={comment} onChange={setComment} />
+      <TextField id="date" label="date" value={date.value} onChange={date.onChange} />
+      <TextField id="visibility" label="visibility" value={visibility.value} onChange={visibility.onChange} />
+      <TextField id="weather" label="weather" value={weather.value} onChange={weather.onChange} />
+      <TextField id="comment" label="comment" value={comment.value} onChange={comment.onChange} />
       <SubmitButton type="submit">add</SubmitButton>
     </Form>
   );
