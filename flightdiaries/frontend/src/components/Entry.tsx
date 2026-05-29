@@ -8,11 +8,11 @@ interface EntryProps {
 
 const EntryBlock = styled.div`
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 `;
 
 const EntryDate = styled.h3`
-  margin: 0 0 0.25rem;
+  margin: 0 0 4px;
 `;
 
 const EntryDetail = styled.p`

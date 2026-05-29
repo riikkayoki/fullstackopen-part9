@@ -16,3 +16,12 @@ export const DiaryEntrySchema = z.object({
 });
 
 export type DiaryEntry = z.infer<typeof DiaryEntrySchema>;
+
+export const NewDiaryEntrySchema = z.object({
+  date: z.iso.date(),
+  weather: WeatherSchema,
+  visibility: VisibilitySchema,
+  comment: z.string().optional(),
+});
+
+export type NewDiaryEntry = z.infer<typeof NewDiaryEntrySchema>;
