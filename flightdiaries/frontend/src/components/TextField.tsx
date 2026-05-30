@@ -6,6 +6,7 @@ interface TextFieldProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  type: 'text' | 'date'
 }
 
 const Field = styled.div`
@@ -27,6 +28,7 @@ export const TextField = (props: TextFieldProps): JSX.Element => {
       <Label htmlFor={props.id}>{props.label}</Label>
       <Input
         id={props.id}
+        type={props.type}
         value={props.value}
         onChange={(event) => props.onChange(event.target.value)}
       />

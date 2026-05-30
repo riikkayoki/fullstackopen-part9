@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { DiaryEntrySchema, ErrorResponseSchema, type DiaryEntry } from '../types';
-
-export interface NewDiaryEntryFields {
-  date: string;
-  weather: string;
-  visibility: string;
-  comment: string;
-}
+import { DiaryEntrySchema, ErrorResponseSchema, type DiaryEntry, type NewDiaryEntry } from '../types';
 
 const baseUrl = 'http://localhost:3000/api/diaries';
 
@@ -16,9 +9,9 @@ export const getAllDiaries = async (): Promise<Array<DiaryEntry>> => {
   return z.array(DiaryEntrySchema).parse(response.data);
 };
 
-export const createDiary = async (fields: NewDiaryEntryFields): Promise<DiaryEntry> => {
+export const createDiary = async (entry: NewDiaryEntry): Promise<DiaryEntry> => {
   try {
-    const response = await axios.post(baseUrl, fields);
+    const response = await axios.post(baseUrl, entry);
     return DiaryEntrySchema.parse(response.data);
   } catch (error) {
     if (axios.isAxiosError(error)) {

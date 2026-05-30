@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { DiaryEntry } from '../types';
-import { getAllDiaries, createDiary, type NewDiaryEntryFields } from '../services/diaryService';
+import type { DiaryEntry, NewDiaryEntry } from '../types';
+import { getAllDiaries, createDiary } from '../services/diaryService';
 
 interface UseDiaries {
   diaries: Array<DiaryEntry>;
-  addDiary: (fields: NewDiaryEntryFields) => Promise<DiaryEntry>;
+  addDiary: (entry: NewDiaryEntry) => Promise<DiaryEntry>;
 }
 
 export const useDiaries = (): UseDiaries => {
@@ -18,8 +18,8 @@ export const useDiaries = (): UseDiaries => {
     fetchDiaries().catch((error: Error) => console.error(error.message));
   }, []);
 
-  const addDiary = async (fields: NewDiaryEntryFields): Promise<DiaryEntry> => {
-    const created = await createDiary(fields);
+  const addDiary = async (entry: NewDiaryEntry): Promise<DiaryEntry> => {
+    const created = await createDiary(entry);
     setDiaries((current) => current.concat(created));
     return created;
   };
