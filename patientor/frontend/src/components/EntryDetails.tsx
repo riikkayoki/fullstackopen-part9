@@ -1,9 +1,21 @@
 import styled from "styled-components";
 
 import { Diagnosis, Entry } from "../types";
+import EntryTypeDetails from "./EntryTypeDetails";
+import EntryTypeIcon from "./EntryTypeIcon";
+import DiagnosisCodes from "./DiagnosisCodes";
 
 const EntryBox = styled.div`
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 12px 16px;
   margin: 12px 0;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const EntryDate = styled.p`
@@ -15,7 +27,7 @@ const Description = styled.p`
   margin: 4px 0;
 `;
 
-const CodeList = styled.ul`
+const Specialist = styled.p`
   margin: 8px 0 0;
 `;
 
@@ -26,20 +38,16 @@ interface Props {
 
 const EntryDetails = ({ entry, diagnoses }: Props) => (
   <EntryBox>
-    <EntryDate>{entry.date}</EntryDate>
+    <Header>
+      <EntryDate>{entry.date}</EntryDate>
+      <EntryTypeIcon entry={entry} />
+    </Header>
     <Description>{entry.description}</Description>
-    {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
-      <CodeList>
-        {entry.diagnosisCodes.map((code) => {
-          const diagnosis = diagnoses.find((option) => option.code === code);
-          return (
-            <li key={code}>
-              {code} {diagnosis?.name}
-            </li>
-          );
-        })}
-      </CodeList>
+    <EntryTypeDetails entry={entry} />
+    {entry.diagnosisCodes && (
+      <DiagnosisCodes codes={entry.diagnosisCodes} diagnoses={diagnoses} />
     )}
+    <Specialist>diagnose by {entry.specialist}</Specialist>
   </EntryBox>
 );
 
