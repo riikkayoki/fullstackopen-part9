@@ -9,12 +9,12 @@ interface Props {
   onSubmit: (values: PatientFormValues) => void;
 }
 
-interface GenderOption{
+interface GenderOption {
   value: Gender;
   label: string;
 }
 
-const genderOptions: GenderOption[] = Object.values(Gender).map(v => ({
+const genderOptions: Array<GenderOption> = Object.values(Gender).map(v => ({
   value: v, label: v.toString()
 }));
 

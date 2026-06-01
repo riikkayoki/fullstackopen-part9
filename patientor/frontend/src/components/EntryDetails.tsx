@@ -1,12 +1,9 @@
 import styled from "styled-components";
 
-import { Entry } from "../types";
+import { Diagnosis, Entry } from "../types";
 
 const EntryBox = styled.div`
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  padding: 12px 16px;
-  margin: 8px 0;
+  margin: 12px 0;
 `;
 
 const EntryDate = styled.p`
@@ -24,17 +21,23 @@ const CodeList = styled.ul`
 
 interface Props {
   entry: Entry;
+  diagnoses: Array<Diagnosis>;
 }
 
-const EntryDetails = ({ entry }: Props) => (
+const EntryDetails = ({ entry, diagnoses }: Props) => (
   <EntryBox>
     <EntryDate>{entry.date}</EntryDate>
     <Description>{entry.description}</Description>
     {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
       <CodeList>
-        {entry.diagnosisCodes.map((code) => (
-          <li key={code}>{code}</li>
-        ))}
+        {entry.diagnosisCodes.map((code) => {
+          const diagnosis = diagnoses.find((option) => option.code === code);
+          return (
+            <li key={code}>
+              {code} {diagnosis?.name}
+            </li>
+          );
+        })}
       </CodeList>
     )}
   </EntryBox>

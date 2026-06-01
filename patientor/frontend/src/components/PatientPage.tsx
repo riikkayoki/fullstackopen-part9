@@ -7,6 +7,7 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 
 import { Gender } from "../types";
 import { usePatient } from "../hooks/usePatient";
+import { useDiagnoses } from "../hooks/useDiagnoses";
 import EntryDetails from "./EntryDetails";
 
 const Wrapper = styled.div`
@@ -45,6 +46,7 @@ const genderIcon = (gender: Gender): ReactElement => {
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
   const { patient, error } = usePatient(id);
+  const diagnoses = useDiagnoses();
 
   if (error) {
     return (
@@ -81,7 +83,7 @@ const PatientPage = () => {
       <SectionTitle>entries</SectionTitle>
       {hasEntries ? (
         patient.entries?.map((entry) => (
-          <EntryDetails key={entry.id} entry={entry} />
+          <EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
         ))
       ) : (
         <Info>No entries yet.</Info>
