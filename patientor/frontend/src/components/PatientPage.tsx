@@ -7,6 +7,7 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 
 import { Gender } from "../types";
 import { usePatient } from "../hooks/usePatient";
+import EntryDetails from "./EntryDetails";
 
 const Wrapper = styled.div`
   margin-top: 16px;
@@ -79,7 +80,9 @@ const PatientPage = () => {
 
       <SectionTitle>entries</SectionTitle>
       {hasEntries ? (
-        <Info>(entry rendering comes in a later exercise)</Info>
+        patient.entries?.map((entry) => (
+          <EntryDetails key={entry.id} entry={entry} />
+        ))
       ) : (
         <Info>No entries yet.</Info>
       )}
