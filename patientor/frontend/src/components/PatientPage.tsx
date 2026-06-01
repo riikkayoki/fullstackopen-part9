@@ -1,14 +1,17 @@
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { Button } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-import { Gender } from "../types";
+import { Gender, EntryFormValues } from "../types";
 import { usePatient } from "../hooks/usePatient";
 import { useDiagnoses } from "../hooks/useDiagnoses";
+import { getErrorMessage } from "../utils/errors";
 import EntryDetails from "./EntryDetails";
+import AddEntryModal from "./AddEntryModal";
 
 const Wrapper = styled.div`
   margin-top: 16px;
@@ -45,8 +48,27 @@ const genderIcon = (gender: Gender): ReactElement => {
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { patient, error } = usePatient(id);
+  const { patient, error, addEntry } = usePatient(id);
   const diagnoses = useDiagnoses();
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [entryError, setEntryError] = useState<string>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setEntryError(undefined);
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      await addEntry(values);
+      closeModal();
+    } catch (e: unknown) {
+      setEntryError(getErrorMessage(e));
+    }
+  };
 
   if (error) {
     return (
@@ -88,6 +110,20 @@ const PatientPage = () => {
       ) : (
         <Info>No entries yet.</Info>
       )}
+
+      <Button
+        variant="contained"
+        onClick={() => openModal()}
+        sx={{ marginTop: 2 }}
+      >
+        Add New Entry
+      </Button>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onClose={closeModal}
+        onSubmit={submitNewEntry}
+        error={entryError}
+      />
     </Wrapper>
   );
 };

@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import patientService from '../services/patientService.ts';
-import { parseNewPatient, zodErrorHandler } from '../middleware.ts';
-import type { NewPatient, NonSensitivePatient, Patient } from '../types.ts';
+import { parseNewPatient, parseNewEntry, zodErrorHandler } from '../middleware.ts';
+import type { NewPatient, NewEntry, NonSensitivePatient, Patient, Entry } from '../types.ts';
 
 const router = express.Router();
 
@@ -21,6 +21,15 @@ router.get('/:id', (req, res: Response<Patient>) => {
 router.post('/', parseNewPatient, (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
   const addedPatient = patientService.addPatient(req.body);
   res.json(addedPatient);
+});
+
+router.post('/:id/entries', parseNewEntry, (req: Request<{ id: string }, unknown, NewEntry>, res: Response<Entry>) => {
+  const addedEntry = patientService.addEntry(req.params.id, req.body);
+  if (addedEntry) {
+    res.json(addedEntry);
+  } else {
+    res.sendStatus(404);
+  }
 });
 
 router.use(zodErrorHandler);
